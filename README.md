@@ -23,3 +23,4 @@ and every file you add to your packages output folder will be copied to the proj
 		<file src="output\readme.txt" target="output\readme.txt" />
     </files>
 	
+Step by step example: http://www.baseclass.ch/blog/Lists/Beitraege/Post.aspx?ID=6&mobile=0
