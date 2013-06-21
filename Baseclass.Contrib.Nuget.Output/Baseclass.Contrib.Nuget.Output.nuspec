@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+    <metadata minClientVersion="2.5">
+        <id>Baseclass.Contrib.Nuget.Output</id>
+        <version>$version$</version>
+        <title>Baseclass.Contrib.Nuget.Output</title>
+        <authors>Daniel Romero</authors>
+        <owners>baseclass</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Treats the "output" folder as an additional special folder and copies it's content to the build folder</description>
+    </metadata>
+    <files>
+        <file src="build\net40\Baseclass.Contrib.Nuget.Output.targets" target="build\net40\Baseclass.Contrib.Nuget.Output.targets" />
+    </files>
+</package>

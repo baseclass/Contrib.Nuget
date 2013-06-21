@@ -2,6 +2,9 @@
 [Bb]in/
 [Oo]bj/
 
+# Baseclass.Contrib.Nuget packages
+Baseclass.Contrib.Nuget.*.nupkg
+
 # mstest test results
 TestResults
 

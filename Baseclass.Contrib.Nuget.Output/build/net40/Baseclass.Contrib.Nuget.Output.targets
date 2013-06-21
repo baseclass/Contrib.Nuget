@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+	<ItemGroup>
+		<NuSpecFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nuspec"/>
+	</ItemGroup>
+  
+	<!-- 
+	Is run once per nuspec file in NuSpecFiles after build, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
+	output folder to the builds OutputPath.
+	-->
+	<Target Name="CopyToOutput" Inputs="@(NuSpecFiles)" Outputs="%(Identity).Dummy" AfterTargets="Build">
+		<Message Text="%(NuSpecFiles.Filename):" />
+		
+		<XmlPeek XmlInputPath="%(NuSpecFiles.FullPath)" 
+			 Query="/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='dependencies']/*[local-name()='dependency' and @id='Baseclass.Contrib.Nuget.Output']">
+			<Output TaskParameter="Result" ItemName="Peeked" />
+		</XmlPeek>
+		
+		<ItemGroup>
+			<FilesToCopy Include="%(NuSpecFiles.RelativeDir)\output\*.*" />
+		</ItemGroup>
+		
+		<Copy
+				SourceFiles="@(FilesToCopy)"
+				DestinationFolder="$(OutputPath)"
+				Condition="'@(Peeked->Count())' == '1'"
+			 />			
+		
+		<Message Text="No reference to Baseclass.Contrib.Nuget.Output found" Condition="'@(Peeked->Count())' == '0'"/> 
+	</Target>
+	
+	<!-- 
+	Is run once per nuspec file in NuSpecFiles after clean, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and deletes every match in the OutputPath.
+	-->
+	<Target Name="CleanOutput" Inputs="@(NuSpecFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
+		<Message Text="%(NuSpecFiles.Filename):" />
+		
+		<XmlPeek XmlInputPath="%(NuSpecFiles.FullPath)" 
+			 Query="/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='dependencies']/*[local-name()='dependency' and @id='Baseclass.Contrib.Nuget.Output']">
+			<Output TaskParameter="Result" ItemName="Peeked" />
+		</XmlPeek>
+		
+		<ItemGroup>
+			<FilesToDelete Include="%(NuSpecFiles.RelativeDir)\output\*.*" />
+		</ItemGroup>
+		
+		<Delete
+				Files="@(FilesToDelete->'$(OutputPath)%(filename)%(extension)')"
+				Condition="'@(Peeked->Count())' == '1'"
+			 />
+		
+		<Message Text="No reference to Baseclass.Contrib.Nuget.Output found" Condition="'@(Peeked->Count())' == '0'"/> 
+	</Target>
+</Project>
