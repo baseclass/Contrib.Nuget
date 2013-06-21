@@ -1,0 +1,4 @@
+Contrib.Nuget
+=============
+
+Baseclass.
