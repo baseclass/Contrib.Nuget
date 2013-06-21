@@ -24,3 +24,5 @@ and every file you add to your packages output folder will be copied to the proj
     </files>
 	
 Step by step example: http://www.baseclass.ch/blog/Lists/Beitraege/Post.aspx?ID=6&mobile=0
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/370ef518807434c0104ca3fc9f509904 "githalytics.com")](http://githalytics.com/baseclass/Contrib.Nuget)
