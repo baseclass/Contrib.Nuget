@@ -151,7 +151,7 @@ function AddLinkedItem()
 	
 	if($projectRelativePath.EndsWith(".tt"))
 	{	
-		$metadata.Add("Generator", "TextTemplatingFilePreprocessor")		
+		$metadata.Add("Generator", "TextTemplatingFileGenerator")		
 	}
 	
 	$msbProject.AddItem("Content", $relativePath, $metadata)
