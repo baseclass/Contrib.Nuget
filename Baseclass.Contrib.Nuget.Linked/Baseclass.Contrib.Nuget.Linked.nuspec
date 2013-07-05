@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+    <metadata>
+        <id>Baseclass.Contrib.Nuget.Linked</id>
+        <version>$version$</version>
+        <title>Baseclass.Contrib.Nuget.Linked</title>
+        <authors>Daniel Romero</authors>
+        <owners>baseclass</owners>
+		<licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
+		<projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Treats the "linked" folder in an dependend nuget package as an additional special folder and adds it's contents as link to the solution</description>
+		<tags>Nuget Targets Copy Link Linked Existing AsExisting build package convention</tags>
+    </metadata>
+    <files>
+		<file src="tools\init.ps1" target="tools\init.ps1" />
+        <file src="tools\Baseclass.Contrib.Nuget.Linked.psm1" target="tools\Baseclass.Contrib.Nuget.Linked.psm1" />
+    </files>
+</package>
