@@ -55,6 +55,6 @@ and every file you add to your packages Linked folder will be linked as existing
 
 TestPackage containing a T4 template and linked Test.txt file can be found at: 
 
-https://github.com/baseclass/Contrib.Nuget/tree/master/TestPackages/TestPackageLinked.1.0.3.nupkg?raw=true
+https://github.com/baseclass/Contrib.Nuget/tree/master/TestPackages/TestPackageLinked.1.0.3.nupkg (Click on "View Raw" to download)
 	
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/370ef518807434c0104ca3fc9f509904 "githalytics.com")](http://githalytics.com/baseclass/Contrib.Nuget)
