@@ -36,6 +36,14 @@ Add this package to your packages dependencies
 	<dependencies>
             <dependency id="Baseclass.Contrib.Nuget.Linked" />
 	</dependencies>
+	
+Add the following line to your install.ps1 script in the tools folder:
+
+	Add-LinkedAsExisting $installPath $project $package
+
+Add the following line to your install.ps1 script in the tools folder:
+
+	Remove-LinkedAsExisting $installPath $project $package
 
 and every file you add to your packages Linked folder will be linked as existing in the current project.
 
@@ -47,6 +55,6 @@ and every file you add to your packages Linked folder will be linked as existing
 
 TestPackage containing a T4 template and linked Test.txt file can be found at: 
 
-https://github.com/baseclass/Contrib.Nuget/tree/master/TestPackages/TestPackageLinked.1.0.3.nupkg
+https://github.com/baseclass/Contrib.Nuget/tree/master/TestPackages/TestPackageLinked.1.0.3.nupkg?raw=true
 	
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/370ef518807434c0104ca3fc9f509904 "githalytics.com")](http://githalytics.com/baseclass/Contrib.Nuget)
