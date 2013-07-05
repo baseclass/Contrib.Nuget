@@ -116,6 +116,7 @@ function LinkedAsExisting {
 		}
 	}
 	
+	$msbProject.Save()
 	$project.Save()
 }
 

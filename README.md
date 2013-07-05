@@ -52,9 +52,13 @@ and every file you add to your packages Linked folder will be linked as existing
         <file src="Linked\CodeTemplates\Test\TemplateFileManagerV2.1.ttinclude" target="Linked\CodeTemplates\Test\TemplateFileManagerV2.1.ttinclude" />
         <file src="Linked\Test.txt" target="Linked\Test.txt" />
     </files>
-
+	
 TestPackage containing a T4 template and linked Test.txt file can be found at: 
 
 https://github.com/baseclass/Contrib.Nuget/tree/master/TestPackages/TestPackageLinked.1.0.3.nupkg (Click on "View Raw" to download)
+
+Limitation: 
+- Option "Create directory for solution" must be checked when creating a project. VS doesn't allow linking existing files that reside directly below the project directory.
+- Conflicts with nuget while uninstalling if it's the last package in the solution.
 	
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/370ef518807434c0104ca3fc9f509904 "githalytics.com")](http://githalytics.com/baseclass/Contrib.Nuget)
