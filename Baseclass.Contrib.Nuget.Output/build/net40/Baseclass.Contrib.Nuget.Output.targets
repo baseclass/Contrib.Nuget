@@ -21,12 +21,12 @@
 		</XmlPeek>
 		
 		<ItemGroup>
-			<FilesToCopy Include="%(NuSpecFiles.RelativeDir)\output\*.*" />
+			<FilesToCopy Include="%(NuSpecFiles.RelativeDir)\output\**\*.*" />
 		</ItemGroup>
 		
 		<Copy
 				SourceFiles="@(FilesToCopy)"
-				DestinationFolder="$(OutputPath)"
+        DestinationFiles="@(FilesToCopy->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')"
 				Condition="'@(Peeked->GetType())' == 'System.String'"
 			 />			
 		
