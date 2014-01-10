@@ -15,13 +15,17 @@ Add this package to your packages dependencies
             <dependency id="Baseclass.Contrib.Nuget.Output" />
 	</dependencies>
 
-and every file you add to your packages output folder will be copied to the projects output folder.
+and every file you add to your packages output folder will be copied at build time to the projects output folder.
 
 	<files>
         <file src="output\native.dll" target="output\native.dll" />
 		<file src="output\autoresolved.dll" target="output\autoresolved.dll" />
-		<file src="output\readme.txt" target="output\readme.txt" />
+		<file src="output\doc\readme.txt" target="output\doc\readme.txt" />
     </files>
+
+Benefits:
+
+If you are dynamically loading components or your depend on some native dll's you need them to be copied to projects output folder. This package does exactly this!
 	
 Step by step example: http://www.baseclass.ch/blog/Lists/Beitraege/Post.aspx?ID=6&mobile=0
 
@@ -41,7 +45,7 @@ Add the following line to your install.ps1 script in the tools folder:
 
 	Add-LinkedAsExisting $installPath $project $package
 
-Add the following line to your install.ps1 script in the tools folder:
+Add the following line to your uninstall.ps1 script in the tools folder:
 
 	Remove-LinkedAsExisting $installPath $project $package
 
