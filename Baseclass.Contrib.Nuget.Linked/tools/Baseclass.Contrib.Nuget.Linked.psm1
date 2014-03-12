@@ -16,7 +16,6 @@ function Add-LinkedAsExisting {
 		
 		[Parameter(Position=2, Mandatory=$true)]
 		[ValidateNotNull()]
-		[NuGet.IPackage]
 		$package
 	)
 	
@@ -45,7 +44,6 @@ function Remove-LinkedAsExisting {
 		
 		[Parameter(Position=2, Mandatory=$true)]
 		[ValidateNotNull()]
-		[NuGet.IPackage]
 		$package
 	)
 	
@@ -74,7 +72,6 @@ function LinkedAsExisting {
 		
 		[Parameter(Position=2, Mandatory=$true)]
 		[ValidateNotNull()]
-		[NuGet.IPackage]
 		$package,
 		
 		[Parameter(Position=3, Mandatory=$true)]
@@ -131,9 +128,18 @@ function RemoveLinkedItem()
 	
 	$item = $msbProject.Items | Where-Object { $_.EvaluatedInclude -eq $relativePath } | Select-Object -First 1
 	
+	if($item -eq $null) #VisualStudio 2013
+	{
+		Write-Host "Selecting items to remove for VisualStudio 2013"
+		$item = $msbProject.Items | %{$_.Value} | Where-Object { $_.EvaluatedInclude -eq $relativePath } | Select-Object -First 1
+	}
+	
 	if($item -ne $null)
 	{
+		Write-Host "Remove $relativePath from project"
 		$msbProject.RemoveItem($item)
+	} else {
+		Write-Host "Items $relativePath not found !"
 	}
 }
 
