@@ -2,16 +2,16 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
 	<ItemGroup>
-		<NuSpecFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nupkg"/>
+		<NupkgFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nupkg"/>
 	</ItemGroup>
 
 	<!-- 
-	Is run once per nuspec file in NuSpecFiles after build, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
+	Is run once per nuspec file in NupkgFiles after build, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
 	output folder to the builds OutputPath.
 	-->
-	<Target Name="CopyToOutput" Inputs="@(NuSpecFiles)" Outputs="%(Identity).Dummy" AfterTargets="Build">
-		<Message Text="Build for %(NuSpecFiles.Filename):" />
-		<UnzipNuspec Nupkg="%(NuSpecFiles.FullPath)" >
+	<Target Name="CopyToOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Build">
+		<Message Text="Build for %(NupkgFiles.Filename):" />
+		<UnzipNuspec Nupkg="%(NupkgFiles.FullPath)" >
 			<Output PropertyName="NuspecFile" TaskParameter="NuspecPath" />
 		</UnzipNuspec>
 
@@ -21,7 +21,7 @@
 		</XmlPeek>
 
 		<ItemGroup>
-			<FilesToCopy Include="%(NuSpecFiles.RelativeDir)\output\**\*.*" />
+			<FilesToCopy Include="%(NupkgFiles.RelativeDir)\output\**\*.*" />
 		</ItemGroup>
 
 		<Copy
@@ -33,11 +33,11 @@
 	</Target>
 
 	<!-- 
-	Is run once per nuspec file in NuSpecFiles after clean, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and deletes every match in the OutputPath. 
+	Is run once per nuspec file in NupkgFiles after clean, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and deletes every match in the OutputPath. 
 	-->
-	<Target Name="CleanOutput" Inputs="@(NuSpecFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
-		<Message Text="Clean for %(NuSpecFiles.Filename):" />
-		<UnzipNuspec Nupkg="%(NuSpecFiles.FullPath)" >
+	<Target Name="CleanOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
+		<Message Text="Clean for %(NupkgFiles.Filename):" />
+		<UnzipNuspec Nupkg="%(NupkgFiles.FullPath)" >
 			<Output PropertyName="NuspecFile" TaskParameter="NuspecPath" />
 		</UnzipNuspec>
 
@@ -47,7 +47,7 @@
 		</XmlPeek>
 
 		<ItemGroup>
-			<FilesToDelete Include="%(NuSpecFiles.RelativeDir)\output\**\*.*" />
+			<FilesToDelete Include="%(NupkgFiles.RelativeDir)\output\**\*.*" />
 		</ItemGroup>
 
 		<Delete
@@ -90,12 +90,15 @@
                 var nuspec = archive.GetParts().Single(part => part.Uri.ToString().EndsWith(".nuspec"));
                 
                 NuspecPath = Path.Combine(nupkgpath, Path.GetFileName(nuspec.Uri.ToString()));
-                
-                using (var outputstream = new FileStream(NuspecPath, FileMode.Create))
-                using (var nspecstream = nuspec.GetStream())
-                {
-                    nspecstream.CopyTo(outputstream);
-                }
+
+                if (!File.Exists(NuspecPath))
+                {                	               
+	            	using (var outputstream = new FileStream(NuspecPath, FileMode.Create))
+	            	using (var nspecstream = nuspec.GetStream())
+	            	{
+	                	nspecstream.CopyTo(outputstream);
+	            	}
+            	}                
             }			
 	]]>      
 			</Code>
