@@ -9,7 +9,7 @@
 	Is run once per nuspec file in NupkgFiles after build, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
 	output folder to the builds OutputPath.
 	-->
-	<Target Name="CopyToOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Build">
+	<Target Name="CopyToOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Compile">
 		<Message Text="Build for %(NupkgFiles.Filename):" />
 		<UnzipNuspec Nupkg="%(NupkgFiles.FullPath)" >
 			<Output PropertyName="NuspecFile" TaskParameter="NuspecPath" />
