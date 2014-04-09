@@ -72,7 +72,7 @@
 		/>
 	</Target>
 
-	<UsingTask TaskName="UnzipNuspec" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v4.0.dll">
+	<UsingTask TaskName="UnzipNuspec" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
 		<ParameterGroup>
 			<Nupkg ParameterType="System.String" Required="true" />
 			<NuspecPath ParameterType="System.String" Output="true" />
