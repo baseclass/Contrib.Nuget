@@ -7,7 +7,7 @@
 
 	<!-- 
 	Is run once per nuspec file in NupkgFiles after build, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
-	output folder to the builds OutputPath.
+	output folder to the builds OutDir.
 	-->
 	<Target Name="CopyToOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Compile">
 		<Message Text="Build for %(NupkgFiles.Filename):" />
@@ -26,14 +26,14 @@
 
 		<Copy
 				SourceFiles="@(FilesToCopy)"
-        DestinationFiles="@(FilesToCopy->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')"
+        DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')"
 				Condition="'@(Peeked->GetType())' == 'System.String'"
 			 />			
 		<Message Text="No reference to Baseclass.Contrib.Nuget.Output found" Condition="'@(Peeked->GetType())' != 'System.String'"/> 
 	</Target>
 
 	<!-- 
-	Is run once per nuspec file in NupkgFiles after clean, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and deletes every match in the OutputPath. 
+	Is run once per nuspec file in NupkgFiles after clean, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and deletes every match in the OutDir. 
 	-->
 	<Target Name="CleanOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
 		<Message Text="Clean for %(NupkgFiles.Filename):" />
@@ -51,7 +51,7 @@
 		</ItemGroup>
 
 		<Delete
-				Files="@(FilesToDelete->'$(OutputPath)\%(RecursiveDir)%(Filename)%(Extension)')"
+				Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')"
 				Condition="'@(PeekedForClean->GetType())' == 'System.String'"
 			 />
 
@@ -63,12 +63,12 @@
 	-->
 	<Target Name="CleanEmptyFolder" Inputs="@(FilesToDelete)" Outputs="%(Identity).Dummy" AfterTargets="CleanOutput">
 		<ItemGroup>
-			<EmptyCheck Include="$(OutputPath)%(FilesToDelete.RecursiveDir)**\*.*" />
+			<EmptyCheck Include="$(OutDir)%(FilesToDelete.RecursiveDir)**\*.*" />
 		</ItemGroup>
 
 		<RemoveDir 
 			Condition="'@(EmptyCheck)' == '' And '%(FilesToDelete.RecursiveDir)' != ''"
-			Directories="$(OutputPath)%(FilesToDelete.RecursiveDir)" 
+			Directories="$(OutDir)%(FilesToDelete.RecursiveDir)" 
 		/>
 	</Target>
 

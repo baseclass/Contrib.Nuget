@@ -10,8 +10,8 @@
 		<projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Treats the "output" folder in an dependend nuget package as an additional special folder and copies it's content to the build folder</description>
-		<releaseNotes>- Support sub directories in output folder
-- Clean files while building with build target: Clean</releaseNotes>
+		<releaseNotes>- Supports msbuild OutDir paramater
+		- Supports TFS builds</releaseNotes>
 		<tags>Nuget Targets Copy Output build package convention</tags>
     </metadata>
     <files>
