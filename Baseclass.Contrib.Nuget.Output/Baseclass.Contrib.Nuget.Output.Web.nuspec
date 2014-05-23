@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2013/01/nuspec.xsd">
+    <metadata minClientVersion="2.5">
+        <id>Baseclass.Contrib.Nuget.Output.Web</id>
+        <version>$version$</version>
+        <title>Baseclass.Contrib.Nuget.Output.Web</title>
+        <authors>Daniel Romero</authors>
+        <owners>baseclass</owners>
+		<licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
+		<projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Adds msdeploy/publish support to Baseclass.Contrib.Nuget.Output.</description>
+		<releaseNotes>- Supports msdeploy and publish</releaseNotes>
+		<tags>Nuget Targets Copy Output build package convention web publish msdeploy</tags>
+		<dependencies>
+			<dependency id="Baseclass.Contrib.Nuget.Output" version="1.0.4" />
+		</dependencies>
+    </metadata>
+    <files>
+        <file src="build\net40\Baseclass.Contrib.Nuget.Output.Web.targets" target="build\net40\Baseclass.Contrib.Nuget.Output.Web.targets" />
+    </files>
+</package>
