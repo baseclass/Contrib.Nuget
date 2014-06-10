@@ -92,12 +92,36 @@
                 NuspecPath = Path.Combine(nupkgpath, Path.GetFileName(nuspec.Uri.ToString()));
 
                 if (!File.Exists(NuspecPath))
-                {                	               
-	            	using (var outputstream = new FileStream(NuspecPath, FileMode.Create))
-	            	using (var nspecstream = nuspec.GetStream())
-	            	{
-	                	nspecstream.CopyTo(outputstream);
-	            	}
+                {       
+					Stream outputstream = null;
+					bool unzipStillNeeded = true;
+					
+					try
+					{
+					    outputstream = new FileStream(NuspecPath, FileMode.Create);					
+					}
+					catch(IOException)
+					{
+						if(!File.Exists(NuspecPath))
+						{
+							throw;
+						}
+						unzipStillNeeded = false;
+					} 
+					if(unzipStillNeeded)
+					{
+						try 
+						{
+							using (var nspecstream = nuspec.GetStream())
+							{
+								nspecstream.CopyTo(outputstream);
+							}
+						}
+						finally 
+						{
+							outputstream.Dispose();
+						}
+					}
             	}                
             }			
 	]]>      
