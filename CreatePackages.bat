@@ -1,4 +1,4 @@
-.nuget\nuget.exe pack Baseclass.Contrib.Nuget.Output\Baseclass.Contrib.Nuget.Output.nuspec -Version 1.0.5
+.nuget\nuget.exe pack Baseclass.Contrib.Nuget.Output\Baseclass.Contrib.Nuget.Output.nuspec -Version 1.0.6
 
 .nuget\nuget.exe pack Baseclass.Contrib.Nuget.Output\Baseclass.Contrib.Nuget.Output.Web.nuspec -Version 1.0.0
 

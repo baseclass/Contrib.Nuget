@@ -93,12 +93,15 @@
 
                 if (!File.Exists(NuspecPath))
                 {       
-					Stream outputstream = null;
-					bool unzipStillNeeded = true;
-					
 					try
 					{
-					    outputstream = new FileStream(NuspecPath, FileMode.Create);					
+					    using(var outputstream = new FileStream(NuspecPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+						{
+							using (var nspecstream = nuspec.GetStream())
+							{
+								nspecstream.CopyTo(outputstream);
+							}
+						}
 					}
 					catch(IOException)
 					{
@@ -106,23 +109,27 @@
 						{
 							throw;
 						}
-						unzipStillNeeded = false;
-					} 
-					if(unzipStillNeeded)
-					{
-						try 
-						{
-							using (var nspecstream = nuspec.GetStream())
-							{
-								nspecstream.CopyTo(outputstream);
-							}
-						}
-						finally 
-						{
-							outputstream.Dispose();
-						}
 					}
-            	}                
+            	}
+				
+				// try to open the file until it's available for reading, XmlPeek fails otherwise						
+				int retry = 10;
+				do
+				{
+					try {
+						using(File.Open(NuspecPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {}
+						break;
+					} catch (IOException) 
+					{
+						retry--;
+						Thread.Sleep(10);
+					}
+				} while(retry > 0);
+				
+				if(retry == 0)
+				{
+					throw new IOException(string.Format("Can't access nuspec file {0}, it's locked!", NuspecPath));
+				}                
             }			
 	]]>      
 			</Code>
