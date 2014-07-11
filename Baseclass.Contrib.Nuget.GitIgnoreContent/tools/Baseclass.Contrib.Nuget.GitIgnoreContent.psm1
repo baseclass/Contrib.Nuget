@@ -81,7 +81,7 @@ Function GetCompatibleContentFiles {
 	
 	$targetFramework = (new-object System.Runtime.Versioning.FrameworkName($targetFrameworkMoniker))
 	
-	$packageFiles = $package.GetFiles() | where { $_.Path.StartsWith("content\") }
+	$packageFiles = $package.GetFiles() | where { $_.Path.StartsWith("content\", [System.StringComparison]::InvariantCultureIgnoreCase) }
 	
 	$iPackageFileType = ([type]"Nuget.IPackageFile, $($package.GetType().Assembly.FullName)");
 	
@@ -122,6 +122,7 @@ Function WriteIgnoreSection {
 			{
 				$projectDir = (gi -Path $_.FullName).Directory.FullName
 				$contentFiles = GetCompatibleContentFiles $package $_
+				
 				foreach($file in $contentFiles)
 				{
 					$sourceRelativePath = $uriGitIgnore.MakeRelativeUri((Join-Path $packagePath $file.Path)).ToString()
@@ -303,8 +304,6 @@ Function InternalRestore-NugetContentFiles {
 	
 	$lines = $origContent.Split(@($delimiter), [System.StringSplitOptions]::None)
 	
-	$inPackageSection = $false
-	
 	$copyFrom = $null
 		
 	for($lineNr = 0; $lineNr -lt $lines.Length; $lineNr++)
@@ -318,17 +317,11 @@ Function InternalRestore-NugetContentFiles {
 			}
 			
 			if($line.StartsWith('# ')) {
-				if(-not $inPackageSection)
-				{
-					$logger.Invoke("Restoring content files for $($line.Replace('# ',''))")
-					$inPackageSection = $true
-				} else {
-					$inPackageSection = $false
-				}
-			} elseif($inPackageSection) {
+				$logger.Invoke("Restoring content files for $($line.Replace('# ',''))")
+			} else {
 				if($line.StartsWith('#-source:')) {
 					$copyFrom = $line.Replace('#-source:','');
-				} else {
+				} elseif($copyFrom -ne $null) {
 					$targetFile = Join-Path  $gitIgnorePath $line 
 					
 					if(-not (Test-Path $targetFile)) {
@@ -343,6 +336,7 @@ Function InternalRestore-NugetContentFiles {
 						}
 						
 						$newItem = Copy-Item $copyFrom -Destination $targetDir -Force
+						$copyFrom = $null
 					}
 				}
 			}
