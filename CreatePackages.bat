@@ -4,4 +4,4 @@
 
 .nuget\nuget.exe pack Baseclass.Contrib.Nuget.Linked\Baseclass.Contrib.Nuget.Linked.nuspec -Version 1.0.2
 
-.nuget\nuget.exe pack Baseclass.Contrib.Nuget.GitIgnoreContent\Baseclass.Contrib.Nuget.GitIgnoreContent.nuspec -Version 0.0.1-t1000
+.nuget\nuget.exe pack Baseclass.Contrib.Nuget.GitIgnoreContent\Baseclass.Contrib.Nuget.GitIgnoreContent.nuspec -Version 0.0.1
