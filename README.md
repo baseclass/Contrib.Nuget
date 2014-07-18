@@ -64,5 +64,14 @@ https://github.com/baseclass/Contrib.Nuget/tree/master/TestPackages/TestPackageL
 Limitation: 
 - Option "Create directory for solution" must be checked when creating a project. VS doesn't allow linking existing files that reside directly below the project directory.
 - Conflicts with nuget while uninstalling if it's the last package in the solution.
+
+## Baseclass.Contrib.Nuget.GitIgnoreContent
+
+Ignore nuget content files in git:
+- Generate entries in the .gitignore file to exclude nuget content files from the source repository
+- Restore nuget content files before building (Automatically in VS and manually with a powershell script
+- Use Initialize-GitIgnore to add it to an existing solution
+
+Step by step example of usage : http://www.baseclass.ch/blog/Lists/Beitraege/Post.aspx?ID=9&mobile=0
 	
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/370ef518807434c0104ca3fc9f509904 "githalytics.com")](http://githalytics.com/baseclass/Contrib.Nuget)
