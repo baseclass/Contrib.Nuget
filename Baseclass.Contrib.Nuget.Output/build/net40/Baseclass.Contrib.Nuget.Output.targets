@@ -81,6 +81,7 @@
 			<Reference Include="WindowsBase" />
 			<Using Namespace="System.IO" />
 			<Using Namespace="System.IO.Packaging" />
+			<Using Namespace="System.Threading" />
 			<Code Type="Fragment" Language="cs">      
 				<![CDATA[                
 			var nupkgpath = Path.GetDirectoryName(Nupkg);
