@@ -10,10 +10,10 @@
 		<projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Adds msdeploy/publish support to Baseclass.Contrib.Nuget.Output.</description>
-		<releaseNotes>- Supports msdeploy and publish</releaseNotes>
+		<releaseNotes>- Supports msdeploy and publish even through TFS with UseWPP_CopyWebApplication to true</releaseNotes>
 		<tags>Nuget Targets Copy Output build package convention web publish msdeploy</tags>
 		<dependencies>
-			<dependency id="Baseclass.Contrib.Nuget.Output" version="1.0.4" />
+			<dependency id="Baseclass.Contrib.Nuget.Output" version="1.0.7" />
 		</dependencies>
     </metadata>
     <files>
