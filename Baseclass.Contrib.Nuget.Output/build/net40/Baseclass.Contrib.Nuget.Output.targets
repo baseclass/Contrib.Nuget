@@ -1,139 +1,182 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-	<ItemGroup>
-		<NupkgFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nupkg"/>
-	</ItemGroup>
+  <ItemGroup>
+    <NupkgFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nupkg"/>
+  </ItemGroup>
 
-	<!-- 
-	Is run once per nuspec file in NupkgFiles after build, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
+  <ItemGroup>
+    <PackageFiles Include="$(MSBuildProjectDirectory)\packages.config"/>
+  </ItemGroup>
+
+  <!-- 
+	Is run once per package file in project after build, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
 	output folder to the builds OutDir.
 	-->
-	<Target Name="CopyToOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Compile">
-		<Message Text="Build for %(NupkgFiles.Filename):" />
-		<UnzipNuspec Nupkg="%(NupkgFiles.FullPath)" >
-			<Output PropertyName="NuspecFile" TaskParameter="NuspecPath" />
-		</UnzipNuspec>
+  <Target Name="CopyToOutput" Inputs="@(PackageFiles)" Outputs="%(Identity).Dummy" AfterTargets="Compile">
+    
+    <PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
+      <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
+    </PackageFilter>    
 
-		<XmlPeek XmlInputPath="$(NuspecFile)"  
-			 Query="/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='dependencies']/*[local-name()='dependency' and @id='Baseclass.Contrib.Nuget.Output']">
-			<Output TaskParameter="Result" ItemName="Peeked" />
-		</XmlPeek>
+    <ItemGroup>
+      <FilesToCopy Include="%(FilteredNugetPackages.RelativeDir)\output\**\*.*" />
+    </ItemGroup>
 
-		<ItemGroup>
-			<FilesToCopy Include="%(NupkgFiles.RelativeDir)\output\**\*.*" />
-		</ItemGroup>
+    <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
 
-		<Copy
-				SourceFiles="@(FilesToCopy)"
-        DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')"
-				Condition="'@(Peeked->GetType())' == 'System.String'"
-			 />			
-		<Message Text="No reference to Baseclass.Contrib.Nuget.Output found" Condition="'@(Peeked->GetType())' != 'System.String'"/> 
-	</Target>
-
-	<!-- 
-	Is run once per nuspec file in NupkgFiles after clean, checks if the .nuspec depends on Baseclass.Contrib.Nuget.Output and deletes every match in the OutDir. 
+  <!-- 
+  Is run once per package file in project after clean, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output deletes every match in the OutDir
 	-->
-	<Target Name="CleanOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
-		<Message Text="Clean for %(NupkgFiles.Filename):" />
-		<UnzipNuspec Nupkg="%(NupkgFiles.FullPath)" >
-			<Output PropertyName="NuspecFile" TaskParameter="NuspecPath" />
-		</UnzipNuspec>
+  <Target Name="CleanOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
+    <PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
+      <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
+    </PackageFilter>
+    
+    <ItemGroup>
+      <FilesToDelete Include="%(FilteredNugetPackages.RelativeDir)\output\**\*.*" />
+    </ItemGroup>
 
-		<XmlPeek XmlInputPath="$(NuspecFile)"  
-			 Query="/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='dependencies']/*[local-name()='dependency' and @id='Baseclass.Contrib.Nuget.Output']">
-			<Output TaskParameter="Result" ItemName="PeekedForClean" />
-		</XmlPeek>
+    <Delete Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'@(PeekedForClean->GetType())' == 'System.String'" />
+  </Target>
 
-		<ItemGroup>
-			<FilesToDelete Include="%(NupkgFiles.RelativeDir)\output\**\*.*" />
-		</ItemGroup>
-
-		<Delete
-				Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')"
-				Condition="'@(PeekedForClean->GetType())' == 'System.String'"
-			 />
-
-		<Message Text="No reference to Baseclass.Contrib.Nuget.Output found" Condition="'@(PeekedForClean->GetType())' != 'System.String'"/> 
-	</Target>
-
-	<!--
+  <!--
 	Is run once per file which has been deleted by the CleanOutput target, if the containing folder is empty it gets deleted.
 	-->
-	<Target Name="CleanEmptyFolder" Inputs="@(FilesToDelete)" Outputs="%(Identity).Dummy" AfterTargets="CleanOutput">
-		<ItemGroup>
-			<EmptyCheck Include="$(OutDir)%(FilesToDelete.RecursiveDir)**\*.*" />
-		</ItemGroup>
+  <Target Name="CleanEmptyFolder" Inputs="@(FilesToDelete)" Outputs="%(Identity).Dummy" AfterTargets="CleanOutput">
+    <ItemGroup>
+      <EmptyCheck Include="$(OutDir)%(FilesToDelete.RecursiveDir)**\*.*" />
+    </ItemGroup>
 
-		<RemoveDir 
-			Condition="'@(EmptyCheck)' == '' And '%(FilesToDelete.RecursiveDir)' != ''"
-			Directories="$(OutDir)%(FilesToDelete.RecursiveDir)" 
-		/>
-	</Target>
+    <RemoveDir Condition="'@(EmptyCheck)' == '' And '%(FilesToDelete.RecursiveDir)' != ''" Directories="$(OutDir)%(FilesToDelete.RecursiveDir)" />
+  </Target>
 
-	<UsingTask TaskName="UnzipNuspec" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
-		<ParameterGroup>
-			<Nupkg ParameterType="System.String" Required="true" />
-			<NuspecPath ParameterType="System.String" Output="true" />
-		</ParameterGroup>
-		<Task>
-			<Reference Include="WindowsBase" />
-			<Using Namespace="System.IO" />
-			<Using Namespace="System.IO.Packaging" />
-			<Using Namespace="System.Threading" />
-			<Code Type="Fragment" Language="cs">      
-				<![CDATA[                
-			var nupkgpath = Path.GetDirectoryName(Nupkg);
-			
-            using (var archive = Package.Open(Nupkg, FileMode.Open, FileAccess.Read, FileShare.Read))
+
+  <!--
+  Filter the NugetPackages list to only include nuget packages referenced in the PackageConfigs list which depend on Baseclass.Contrib.Nuget.Output
+  -->
+  <UsingTask TaskName="PackageFilter" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+    <ParameterGroup>
+      <PackageConfigs ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <NugetPackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
+      <Result ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
+    </ParameterGroup>
+    <Task>        
+      <Reference Include="System.Xml"/>
+      <Reference Include="System.Xml.Linq"/>
+      <Reference Include="WindowsBase" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Packaging" />
+      <Using Namespace="System" />
+      <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Xml" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[                
+            var usedPackages = new HashSet<string>(); // packaged used by the project
+            try
+            {                
+                foreach (var packageConfig in PackageConfigs)
+                {
+                    var path = packageConfig.GetMetadata("FullPath");
+                    var xml = new XmlDocument();
+                    xml.LoadXml(File.ReadAllText(path));
+                    var deps = xml.GetElementsByTagName("package");
+                    foreach (XmlNode dep in deps)
+                    {
+                        if (dep.Attributes == null)
+                        {
+                            continue;
+                        }
+                        var id = dep.Attributes.GetNamedItem("id").Value;
+                        if ("Baseclass.Contrib.Nuget.Output".Equals(id))
+                        {
+                            continue;
+                        }
+                        var version = dep.Attributes.GetNamedItem("version").Value;
+                        var s = string.Format("{0}.{1}", id, version);
+                        usedPackages.Add(s);
+                    }
+                }
+            }
+            catch (Exception e)
             {
-                var nuspec = archive.GetParts().Single(part => part.Uri.ToString().EndsWith(".nuspec"));
-                
-                NuspecPath = Path.Combine(nupkgpath, Path.GetFileName(nuspec.Uri.ToString()));
+                Log.LogError("Failed to load package files: {0}", e.Message);
+                return false;
+            }
 
-                if (!File.Exists(NuspecPath))
-                {       
-					try
-					{
-					    using(var outputstream = new FileStream(NuspecPath, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
-						{
-							using (var nspecstream = nuspec.GetStream())
-							{
-								nspecstream.CopyTo(outputstream);
-							}
-						}
-					}
-					catch(IOException)
-					{
-						if(!File.Exists(NuspecPath))
-						{
-							throw;
-						}
-					}
-            	}
-				
-				// try to open the file until it's available for reading, XmlPeek fails otherwise						
-				int retry = 10;
-				do
-				{
-					try {
-						using(File.Open(NuspecPath, FileMode.Open, FileAccess.Read, FileShare.Read)) {}
-						break;
-					} catch (IOException) 
-					{
-						retry--;
-						Thread.Sleep(10);
-					}
-				} while(retry > 0);
-				
-				if(retry == 0)
-				{
-					throw new IOException(string.Format("Can't access nuspec file {0}, it's locked!", NuspecPath));
-				}                
-            }			
-	]]>      
-			</Code>
-		</Task>
-	</UsingTask>
+            var usedNugetPackages = new List<ITaskItem>(); // list of nuget packages used by the project
+            try
+            {
+                foreach (var nugetPackage in NugetPackages)
+                {                    
+                    var path = nugetPackage.GetMetadata("FullPath");
+                    var parts = path.Split(Path.DirectorySeparatorChar);
+                    usedNugetPackages.AddRange(from part in parts where usedPackages.Contains(part) select nugetPackage);
+                }
+            }
+            catch (Exception e)
+            {
+                Log.LogError("Failed to filter nuget specs: {0}", e.Message);
+                return false;
+            }
+
+            var result = new List<ITaskItem>(); // list of nuget packages used by the project that depends on Baseclass.Contrib.Nuget.Output
+            foreach (var nugetPackage in usedNugetPackages)
+            {
+                var path = nugetPackage.GetMetadata("FullPath");
+                var nupkgpath = Path.GetDirectoryName(path);
+
+                using (var archive = Package.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
+                {
+                    var nuspec = archive.GetParts().Single(part => part.Uri.ToString().EndsWith(".nuspec"));
+                    var nugetSpec = Path.Combine(nupkgpath, Path.GetFileName(nuspec.Uri.ToString()));
+
+                    if (!File.Exists(nugetSpec))
+                    {
+                        // unpack the nuget spec file from the package
+                        try
+                        {
+                            using (var outputstream = new FileStream(nugetSpec, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+                            {
+                                using (var nspecstream = nuspec.GetStream())
+                                {
+                                    nspecstream.CopyTo(outputstream);
+                                }
+                            }
+                        }
+                        catch (IOException)
+                        {
+                            if (!File.Exists(nugetSpec))
+                            {
+                                throw;
+                            }
+                        }
+                    }
+
+                    var xml = new XmlDocument();
+                    xml.LoadXml(File.ReadAllText(nugetSpec));
+                    var deps = xml.GetElementsByTagName("dependency");
+                    foreach (XmlNode dep in deps)
+                    {
+                        if (dep.Attributes == null)
+                        {
+                            continue;
+                        }
+                        var id = dep.Attributes.GetNamedItem("id").Value;
+                        if ("Baseclass.Contrib.Nuget.Output".Equals(id))
+                        {
+                            result.Add(new TaskItem(nugetPackage));
+                            break;
+                        }                                                
+                    }
+                }
+            }
+            Result = result.ToArray();
+            return true;                        
+	]]>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>
