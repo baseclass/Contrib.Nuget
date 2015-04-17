@@ -19,8 +19,12 @@
       <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
     </PackageFilter>    
 
+		<PropertyGroup>
+			<FullPaths>$([System.IO.Path]::GetFullPath(%(FilteredNugetPackages.RelativeDir)))</FullPaths>
+		</PropertyGroup>
+
     <ItemGroup>
-      <FilesToCopy Include="%(FilteredNugetPackages.RelativeDir)\output\**\*.*" />
+      <FilesToCopy Include="$(FullPaths)\output\**\*.*" />
     </ItemGroup>
 
     <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
