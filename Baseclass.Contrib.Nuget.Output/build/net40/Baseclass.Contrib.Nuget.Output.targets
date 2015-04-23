@@ -1,14 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
-  <ItemGroup>
-    <NupkgFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nupkg"/>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageFiles Include="$(MSBuildProjectDirectory)\packages.config"/>
-  </ItemGroup>
-
+  <!-- ============================================================ -->
+  <!-- Build targets                                                -->
+  <!-- ============================================================ -->
   <!-- 
   Is run once after build, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
   output folder to the builds OutDir.
@@ -35,6 +30,40 @@
     <RemoveDir Condition="'@(EmptyCheck)' == '' And '%(NugetOutputFiles.RecursiveDir)' != ''" Directories="$(OutDir)%(NugetOutputFiles.RecursiveDir)" />
   </Target>
 
+  <!-- ============================================================ -->
+  <!-- Web publication targets                                      -->
+  <!-- ============================================================ -->
+  
+  <PropertyGroup>
+    <PipelineCollectFilesPhaseDependsOn>
+    $(PipelineCollectFilesPhaseDependsOn);
+    CollectNugetPackageFiles;
+    </PipelineCollectFilesPhaseDependsOn>
+  </PropertyGroup>
+
+  <!--
+  Is run once during the PipelineCollectFilesPhase to fill FilesForPackagingFromProject with the files from NugetOutputFiles
+  -->
+  <Target Name="CollectNugetPackageFiles" DependsOnTargets="CollectNugetOutputFiles">
+    <ItemGroup>
+      <FilesForPackagingFromProject Include="@(NugetOutputFiles)" >
+        <DestinationRelativePath>bin\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+
+  <!-- ============================================================ -->
+  <!-- Common targets                                               -->
+  <!-- ============================================================ -->
+  
+  <ItemGroup>
+    <NupkgFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nupkg"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageFiles Include="$(MSBuildProjectDirectory)\packages.config"/>
+  </ItemGroup>
+  
   <!--
   Is run once to compute the NugetOutputFiles item from the NuGet dependencies of the project
   -->
@@ -172,12 +201,12 @@
                         {
                             result.Add(new TaskItem(nugetPackage));
                             break;
-                        }                                                
+                        }
                     }
                 }
             }
             Result = result.ToArray();
-            return true;                        
+            return true;
   ]]>
       </Code>
     </Task>

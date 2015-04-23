@@ -9,9 +9,9 @@
         <licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
         <projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Treats the "output" folder in an dependent nuget package as an additional special folder and copies it's content to the build folder</description>
-        <releaseNotes xml:space="preserve">- Only copy files from nuget packages that the project actually depends on
-- Fixes "Path too long" issues
+        <description>Treats the "output" folder in an dependent nuget package as an additional special folder and copies it's content to the build folder
+Also include support web publication pipeline.</description>
+        <releaseNotes xml:space="preserve">- Multiple internal optimisations, and aggregation of Baseclass.Nuget.Output.Web in the same target to simplify usage.
         </releaseNotes>
         <tags>Nuget Targets Copy Output build package convention</tags>
     </metadata>

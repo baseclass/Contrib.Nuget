@@ -3,20 +3,19 @@
     <metadata minClientVersion="2.5">
         <id>Baseclass.Contrib.Nuget.Output.Web</id>
         <version>$version$</version>
-        <title>Baseclass.Contrib.Nuget.Output.Web</title>
+        <title>[Obsolete] Baseclass.Contrib.Nuget.Output.Web</title>
         <authors>Daniel Romero</authors>
         <owners>baseclass</owners>
         <licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
         <projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Adds msdeploy/publish support to Baseclass.Contrib.Nuget.Output.</description>
-        <releaseNotes>- Supports msdeploy and publish even through TFS with UseWPP_CopyWebApplication to true</releaseNotes>
+        <description>[Obsolete] now included in Baseclass.Contrib.Nuget.Output</description>
+        <releaseNotes>This package can be safely removed. It just help you to upgrade to Baseclass.Contrib.Nuget.Output 2.0.0</releaseNotes>
         <tags>Nuget Targets Copy Output build package convention web publish msdeploy</tags>
         <dependencies>
-          <dependency id="Baseclass.Contrib.Nuget.Output" version="1.0.8" />
+          <dependency id="Baseclass.Contrib.Nuget.Output" version="2.0.0" />
         </dependencies>
     </metadata>
     <files>
-        <file src="build\net40\Baseclass.Contrib.Nuget.Output.Web.targets" target="build\net40\Baseclass.Contrib.Nuget.Output.Web.targets" />
     </files>
 </package>
