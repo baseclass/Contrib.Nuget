@@ -19,12 +19,8 @@
       <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
     </PackageFilter>    
 
-		<PropertyGroup>
-			<FullPaths>$([System.IO.Path]::GetFullPath(%(FilteredNugetPackages.RelativeDir)))</FullPaths>
-		</PropertyGroup>
-
     <ItemGroup>
-      <FilesToCopy Include="$(FullPaths)\output\**\*.*" />
+      <FilesToCopy Include="%(FilteredNugetPackages.FullPath)\output\**\*.*" />
     </ItemGroup>
 
     <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
@@ -39,7 +35,7 @@
     </PackageFilter>
     
     <ItemGroup>
-      <FilesToDelete Include="%(FilteredNugetPackages.RelativeDir)\output\**\*.*" />
+      <FilesToDelete Include="%(FilteredNugetPackages.FullPath)\output\**\*.*" />
     </ItemGroup>
 
     <Delete Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'@(PeekedForClean->GetType())' == 'System.String'" />
