@@ -6,24 +6,28 @@
 		CollectNugetPackageFiles;
 		</PipelineCollectFilesPhaseDependsOn>
 	</PropertyGroup>
-	<Target Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" Name="CollectNugetPackageFiles">
-	    <Message Text="Collecting files for publication for %(NupkgFiles.Filename):" />
-		<UnzipNuspec Nupkg="%(NupkgFiles.FullPath)" >
-			<Output PropertyName="NuspecFile" TaskParameter="NuspecPath" />
-		</UnzipNuspec>
+	<Target Inputs="@(PackageFiles)" Outputs="%(Identity).Dummy" Name="CollectNugetPackageFiles">
+		<Message Text="Collecting files for publication for $(MSBuildProjectName):" />
 
-		<XmlPeek XmlInputPath="$(NuspecFile)"  
-			 Query="/*[local-name()='package']/*[local-name()='metadata']/*[local-name()='dependencies']/*[local-name()='dependency' and @id='Baseclass.Contrib.Nuget.Output']">
-			<Output TaskParameter="Result" ItemName="PeekedForPublish" />
-		</XmlPeek>
+		<!--
+		Already done by the CopyToOutput task from Baseclass.Contrib.Nuget.Ouput
+		Computation of the FilteredNugetPackages should be done in a dedicated tasks that we can declare as a dependency to avoid the magic.
+		-->
+		<!--
+		<PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
+			<Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
+		</PackageFilter>
+		-->
 
-		<ItemGroup Condition="'@(PeekedForPublish->GetType())' == 'System.String'">
-			<FilesToPublish Include="%(NupkgFiles.RelativeDir)\output\**\*.*" />
+		<Message Text="@(FilteredNugetPackages->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" />
+		<Message Text="Total filtered packages : @(FilteredNugetPackages->Count())" /> 
+
+		<ItemGroup>
+			<FilesToPublish Include="%(FilteredNugetPackages.RootDir)%(FilteredNugetPackages.Directory)\output\**\*.*" />
 		</ItemGroup>
 		
-		<Message Text="No reference to Baseclass.Contrib.Nuget.Output found" Condition="'@(PeekedForPublish->GetType())' != 'System.String'"/> 
-		
-		<Message Text="@(FilesToPublish->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" Condition="'@(PeekedForPublish->GetType())' == 'System.String'"/>
+		<Message Text="@(FilesToPublish->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" />
+		<Message Text="Total files collected : @(FilesToPublish->Count())" /> 
 		
 		<ItemGroup Condition="'@(PeekedForPublish->GetType())' == 'System.String'">
 			<FilesForPackagingFromProject Include="@(FilesToPublish)" >
