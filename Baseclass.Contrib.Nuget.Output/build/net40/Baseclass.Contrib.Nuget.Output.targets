@@ -20,7 +20,7 @@
     </PackageFilter>    
 
     <ItemGroup>
-      <FilesToCopy Include="%(FilteredNugetPackages.FullPath)\output\**\*.*" />
+      <FilesToCopy Include="%(FilteredNugetPackages.RootDir)%(FilteredNugetPackages.Directory)\output\**\*.*" />
     </ItemGroup>
 
     <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
@@ -35,7 +35,7 @@
     </PackageFilter>
     
     <ItemGroup>
-      <FilesToDelete Include="%(FilteredNugetPackages.FullPath)\output\**\*.*" />
+      <FilesToDelete Include="%(FilteredNugetPackages.RootDir)%(FilteredNugetPackages.Directory)\output\**\*.*" />
     </ItemGroup>
 
     <Delete Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'@(PeekedForClean->GetType())' == 'System.String'" />
