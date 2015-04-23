@@ -10,48 +10,51 @@
   </ItemGroup>
 
   <!-- 
-	Is run once per package file in project after build, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
-	output folder to the builds OutDir.
-	-->
-  <Target Name="CopyToOutput" Inputs="@(PackageFiles)" Outputs="%(Identity).Dummy" AfterTargets="Compile">
-    
-    <PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
-      <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
-    </PackageFilter>    
-
-    <ItemGroup>
-      <FilesToCopy Include="%(FilteredNugetPackages.RootDir)%(FilteredNugetPackages.Directory)\output\**\*.*" />
-    </ItemGroup>
-
-    <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+  Is run once after build, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
+  output folder to the builds OutDir.
+  -->
+  <Target Name="CopyToOutput" AfterTargets="Compile" DependsOnTargets="CollectNugetOutputFiles">
+    <Copy SourceFiles="@(NugetOutputFiles)" DestinationFiles="@(NugetOutputFiles->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <!-- 
-  Is run once per package file in project after clean, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output deletes every match in the OutDir
-	-->
-  <Target Name="CleanOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
-    <PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
-      <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
-    </PackageFilter>
-    
-    <ItemGroup>
-      <FilesToDelete Include="%(FilteredNugetPackages.RootDir)%(FilteredNugetPackages.Directory)\output\**\*.*" />
-    </ItemGroup>
-
-    <Delete Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'@(PeekedForClean->GetType())' == 'System.String'" />
+  Is run once after clean, delete all files that match files collected by the CollectNugetOutputFiles task.
+  -->
+  <Target Name="CleanOutput" AfterTargets="Clean" DependsOnTargets="CollectNugetOutputFiles">
+    <Delete Files="@(NugetOutputFiles->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <!--
-	Is run once per file which has been deleted by the CleanOutput target, if the containing folder is empty it gets deleted.
-	-->
-  <Target Name="CleanEmptyFolder" Inputs="@(FilesToDelete)" Outputs="%(Identity).Dummy" AfterTargets="CleanOutput">
+  Is run once per file which has been deleted by the CleanOutput target, if the containing folder is empty it gets deleted.
+  -->
+  <Target Name="CleanEmptyFolder" Inputs="@(NugetOutputFiles)" Outputs="%(Identity).Dummy" AfterTargets="CleanOutput">
     <ItemGroup>
-      <EmptyCheck Include="$(OutDir)%(FilesToDelete.RecursiveDir)**\*.*" />
+      <EmptyCheck Include="$(OutDir)%(NugetOutputFiles.RecursiveDir)**\*.*" />
     </ItemGroup>
 
-    <RemoveDir Condition="'@(EmptyCheck)' == '' And '%(FilesToDelete.RecursiveDir)' != ''" Directories="$(OutDir)%(FilesToDelete.RecursiveDir)" />
+    <RemoveDir Condition="'@(EmptyCheck)' == '' And '%(NugetOutputFiles.RecursiveDir)' != ''" Directories="$(OutDir)%(NugetOutputFiles.RecursiveDir)" />
   </Target>
 
+  <!--
+  Is run once to compute the NugetOutputFiles item from the NuGet dependencies of the project
+  -->
+  <Target Name="CollectNugetOutputFiles">
+    <Message Text="Collecting NuGet output files for $(MSBuildProjectName):" />
+    
+    <PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
+      <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
+    </PackageFilter>
+
+    <Message Text="@(FilteredNugetPackages->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" />
+    <Message Text="Total filtered packages : @(FilteredNugetPackages->Count())" /> 
+    
+    <ItemGroup>
+      <NugetOutputFiles Include="%(FilteredNugetPackages.RootDir)%(FilteredNugetPackages.Directory)\output\**\*.*" />
+    </ItemGroup>
+    
+    <Message Text="@(NugetOutputFiles->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" />
+    <Message Text="Total files collected : @(NugetOutputFiles->Count())" /> 
+  </Target>
 
   <!--
   Filter the NugetPackages list to only include nuget packages referenced in the PackageConfigs list which depend on Baseclass.Contrib.Nuget.Output
@@ -175,7 +178,7 @@
             }
             Result = result.ToArray();
             return true;                        
-	]]>
+  ]]>
       </Code>
     </Task>
   </UsingTask>

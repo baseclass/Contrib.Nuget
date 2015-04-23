@@ -1,38 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<PropertyGroup>
-		<PipelineCollectFilesPhaseDependsOn>
-		$(PipelineCollectFilesPhaseDependsOn);
-		CollectNugetPackageFiles;
-		</PipelineCollectFilesPhaseDependsOn>
-	</PropertyGroup>
-	<Target Inputs="@(PackageFiles)" Outputs="%(Identity).Dummy" Name="CollectNugetPackageFiles">
-		<Message Text="Collecting files for publication for $(MSBuildProjectName):" />
-
-		<!--
-		Already done by the CopyToOutput task from Baseclass.Contrib.Nuget.Ouput
-		Computation of the FilteredNugetPackages should be done in a dedicated tasks that we can declare as a dependency to avoid the magic.
-		-->
-		<!--
-		<PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
-			<Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
-		</PackageFilter>
-		-->
-
-		<Message Text="@(FilteredNugetPackages->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" />
-		<Message Text="Total filtered packages : @(FilteredNugetPackages->Count())" /> 
-
-		<ItemGroup>
-			<FilesToPublish Include="%(FilteredNugetPackages.RootDir)%(FilteredNugetPackages.Directory)\output\**\*.*" />
-		</ItemGroup>
-		
-		<Message Text="@(FilesToPublish->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" />
-		<Message Text="Total files collected : @(FilesToPublish->Count())" /> 
-		
-		<ItemGroup Condition="'@(PeekedForPublish->GetType())' == 'System.String'">
-			<FilesForPackagingFromProject Include="@(FilesToPublish)" >
-				<DestinationRelativePath>bin\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
-			</FilesForPackagingFromProject>
-		</ItemGroup>
-	</Target>
+  <PropertyGroup>
+    <PipelineCollectFilesPhaseDependsOn>
+    $(PipelineCollectFilesPhaseDependsOn);
+    CollectNugetPackageFiles;
+    </PipelineCollectFilesPhaseDependsOn>
+  </PropertyGroup>
+  
+  <!--
+  Is run once during the PipelineCollectFilesPhase to fill FilesForPackagingFromProject with the files from NugetOutputFiles
+  -->
+  <Target Name="CollectNugetPackageFiles" DependsOnTargets="CollectNugetOutputFiles">		
+    <ItemGroup>
+      <FilesForPackagingFromProject Include="@(NugetOutputFiles)" >
+        <DestinationRelativePath>bin\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
 </Project>
