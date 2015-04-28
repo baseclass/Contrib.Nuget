@@ -98,11 +98,12 @@
       <Reference Include="System.Xml"/>
       <Reference Include="System.Xml.Linq"/>
       <Reference Include="WindowsBase" />
-      <Using Namespace="System.IO" />
-      <Using Namespace="System.IO.Packaging" />
       <Using Namespace="System" />
       <Using Namespace="System.Collections.Generic" />
+      <Using Namespace="System.IO" />
+      <Using Namespace="System.IO.Packaging" />
       <Using Namespace="System.Linq" />
+      <Using Namespace="System.Threading" />
       <Using Namespace="System.Xml" />
       <Code Type="Fragment" Language="cs">
         <![CDATA[                
@@ -165,26 +166,38 @@
                     var nuspec = archive.GetParts().Single(part => part.Uri.ToString().EndsWith(".nuspec"));
                     var nugetSpec = Path.Combine(nupkgpath, Path.GetFileName(nuspec.Uri.ToString()));
 
-                    if (!File.Exists(nugetSpec))
+                    // use a mutex to ensure that only one process unzip the nuspec
+                    // and that one process do not start reading it due to its existence while another one is still writing it.
+                    Mutex mut = new Mutex(false, "UnzipNuSpec");
+                    try
                     {
-                        // unpack the nuget spec file from the package
-                        try
-                        {
-                            using (var outputstream = new FileStream(nugetSpec, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
-                            {
-                                using (var nspecstream = nuspec.GetStream())
-                                {
-                                    nspecstream.CopyTo(outputstream);
-                                }
-                            }
-                        }
-                        catch (IOException)
-                        {
-                            if (!File.Exists(nugetSpec))
-                            {
-                                throw;
-                            }
-                        }
+                      mut.WaitOne();
+                      
+                      if (!File.Exists(nugetSpec))
+                      {
+                          // unpack the nuget spec file from the package
+                          try
+                          {
+                              using (var outputstream = new FileStream(nugetSpec, FileMode.Create, FileAccess.ReadWrite, FileShare.None))
+                              {
+                                  using (var nspecstream = nuspec.GetStream())
+                                  {
+                                      nspecstream.CopyTo(outputstream);
+                                  }
+                              }
+                          }
+                          catch (IOException)
+                          {
+                              if (!File.Exists(nugetSpec))
+                              {
+                                  throw;
+                              }
+                          }
+                      }
+                    }
+                    finally
+                    {
+                      mut.ReleaseMutex();
                     }
 
                     var xml = new XmlDocument();
