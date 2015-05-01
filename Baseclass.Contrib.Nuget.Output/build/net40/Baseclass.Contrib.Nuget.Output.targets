@@ -20,8 +20,12 @@
 			<Output TaskParameter="Result" ItemName="Peeked" />
 		</XmlPeek>
 
+		<PropertyGroup>
+			<FullPaths>$([System.IO.Path]::GetFullPath(%(NupkgFiles.RelativeDir)))</FullPaths>
+		</PropertyGroup>
+
 		<ItemGroup>
-			<FilesToCopy Include="%(NupkgFiles.RelativeDir)\output\**\*.*" />
+			<FilesToCopy Include="$(FullPaths)\output\**\*.*" />
 		</ItemGroup>
 
 		<Copy
