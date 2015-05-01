@@ -10,7 +10,8 @@
 		<projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Treats the "output" folder in an dependend nuget package as an additional special folder and copies it's content to the build folder</description>
-		<releaseNotes>- Better support for parallel builds</releaseNotes>
+		<releaseNotes>- Fixed issues with long filenames
+    - only copy files from dependend nuget packages</releaseNotes>
 		<tags>Nuget Targets Copy Output build package convention</tags>
     </metadata>
     <files>

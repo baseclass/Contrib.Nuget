@@ -9,15 +9,14 @@
     <PackageFiles Include="$(MSBuildProjectDirectory)\packages.config"/>
   </ItemGroup>
 
-  <!-- 
+  <!--
 	Is run once per package file in project after build, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output and copies everything which is in the
 	output folder to the builds OutDir.
 	-->
   <Target Name="CopyToOutput" Inputs="@(PackageFiles)" Outputs="%(Identity).Dummy" AfterTargets="Compile">
-    
     <PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
       <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
-    </PackageFilter>    
+    </PackageFilter>
 
 		<PropertyGroup>
 			<FullPaths>$([System.IO.Path]::GetFullPath(%(FilteredNugetPackages.RelativeDir)))</FullPaths>
@@ -30,19 +29,23 @@
     <Copy SourceFiles="@(FilesToCopy)" DestinationFiles="@(FilesToCopy->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
-  <!-- 
+  <!--
   Is run once per package file in project after clean, checks if the project's nuget package's .nuspec depends on Baseclass.Contrib.Nuget.Output deletes every match in the OutDir
 	-->
-  <Target Name="CleanOutput" Inputs="@(NupkgFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
+  <Target Name="CleanOutput" Inputs="@(PackageFiles)" Outputs="%(Identity).Dummy" AfterTargets="Clean">
     <PackageFilter PackageConfigs="@(PackageFiles)" NugetPackages="@(NupkgFiles)">
       <Output ItemName="FilteredNugetPackagesForClean" TaskParameter="Result" />
     </PackageFilter>
-    
+
+    <PropertyGroup>
+			<FullPaths>$([System.IO.Path]::GetFullPath(%(FilteredNugetPackagesForClean.RelativeDir)))</FullPaths>
+		</PropertyGroup>
+
     <ItemGroup>
-      <FilesToDelete Include="%(FilteredNugetPackagesForClean.RelativeDir)\output\**\*.*" />
+      <FilesToDelete Include="$(FullPaths)\output\**\*.*" />
     </ItemGroup>
 
-    <Delete Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" Condition="'@(PeekedForClean->GetType())' == 'System.String'" />
+    <Delete Files="@(FilesToDelete->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 
   <!--
@@ -66,7 +69,7 @@
       <NugetPackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <Result ParameterType="Microsoft.Build.Framework.ITaskItem[]" Output="true" />
     </ParameterGroup>
-    <Task>        
+    <Task>
       <Reference Include="System.Xml"/>
       <Reference Include="System.Xml.Linq"/>
       <Reference Include="WindowsBase" />
@@ -77,10 +80,10 @@
       <Using Namespace="System.Linq" />
       <Using Namespace="System.Xml" />
       <Code Type="Fragment" Language="cs">
-        <![CDATA[                
+        <![CDATA[
             var usedPackages = new HashSet<string>(); // packaged used by the project
             try
-            {                
+            {
                 foreach (var packageConfig in PackageConfigs)
                 {
                     var path = packageConfig.GetMetadata("FullPath");
@@ -114,7 +117,7 @@
             try
             {
                 foreach (var nugetPackage in NugetPackages)
-                {                    
+                {
                     var path = nugetPackage.GetMetadata("FullPath");
                     var parts = path.Split(Path.DirectorySeparatorChar);
                     usedNugetPackages.AddRange(from part in parts where usedPackages.Contains(part) select nugetPackage);
@@ -173,12 +176,12 @@
                         {
                             result.Add(new TaskItem(nugetPackage));
                             break;
-                        }                                                
+                        }
                     }
                 }
             }
             Result = result.ToArray();
-            return true;                        
+            return true;
 	]]>
       </Code>
     </Task>
