@@ -6,12 +6,14 @@
         <title>Baseclass.Contrib.Nuget.Output</title>
         <authors>Daniel Romero</authors>
         <owners>baseclass</owners>
-		<licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
-		<projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
+        <licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
+        <projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Treats the "output" folder in an dependend nuget package as an additional special folder and copies it's content to the build folder</description>
-		<releaseNotes>- Better support for parallel builds</releaseNotes>
-		<tags>Nuget Targets Copy Output build package convention</tags>
+		<releaseNotes xml:space="preserve">- Better support for parallel builds
+- Multiple internal optimisations, and aggregation of Baseclass.Nuget.Output.Web in the same target to simplify usage.
+- Fix concurrency error that could occure when extracting the nuspec files from the NuGet packages.</releaseNotes>
+        <tags>Nuget Targets Copy Output build package convention</tags>
     </metadata>
     <files>
         <file src="build\net40\Baseclass.Contrib.Nuget.Output.targets" target="build\net40\Baseclass.Contrib.Nuget.Output.targets" />
