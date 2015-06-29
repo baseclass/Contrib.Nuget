@@ -9,7 +9,9 @@
   output folder to the builds OutDir.
   -->
   <Target Name="CopyToOutput" AfterTargets="Compile" DependsOnTargets="CollectNugetOutputFiles">
-    <Copy SourceFiles="@(NugetOutputFiles)" DestinationFiles="@(NugetOutputFiles->'$(OutDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Include="@(NugetOutputFiles)"></ReferenceCopyLocalPaths>
++   </ItemGroup>
   </Target>
 
   <!-- 
@@ -28,28 +30,6 @@
     </ItemGroup>
 
     <RemoveDir Condition="'@(EmptyCheck)' == '' And '%(NugetOutputFiles.RecursiveDir)' != ''" Directories="$(OutDir)%(NugetOutputFiles.RecursiveDir)" />
-  </Target>
-
-  <!-- ============================================================ -->
-  <!-- Web publication targets                                      -->
-  <!-- ============================================================ -->
-  
-  <PropertyGroup>
-    <PipelineCollectFilesPhaseDependsOn>
-    $(PipelineCollectFilesPhaseDependsOn);
-    CollectNugetPackageFiles;
-    </PipelineCollectFilesPhaseDependsOn>
-  </PropertyGroup>
-
-  <!--
-  Is run once during the PipelineCollectFilesPhase to fill FilesForPackagingFromProject with the files from NugetOutputFiles
-  -->
-  <Target Name="CollectNugetPackageFiles" DependsOnTargets="CollectNugetOutputFiles">
-    <ItemGroup>
-      <FilesForPackagingFromProject Include="@(NugetOutputFiles)" >
-        <DestinationRelativePath>bin\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
-      </FilesForPackagingFromProject>
-    </ItemGroup>
   </Target>
 
   <!-- ============================================================ -->
