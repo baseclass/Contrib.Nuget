@@ -88,7 +88,14 @@
   <!--
   Filter the NugetPackages list to only include nuget packages referenced in the PackageConfigs list which depend on Baseclass.Contrib.Nuget.Output
   -->
-  <UsingTask TaskName="PackageFilter" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll">
+  <PropertyGroup Condition=" '$(MSBuildToolsVersion)' == '14.0' ">
+    <BuildTaskPath>$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll</BuildTaskPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(MSBuildToolsVersion)' != '14.0' ">
+    <BuildTaskPath>$(MSBuildToolsPath)\Microsoft.Build.Tasks.v$(MSBuildToolsVersion).dll</BuildTaskPath>
+  </PropertyGroup>
+  
+  <UsingTask TaskName="PackageFilter" TaskFactory="CodeTaskFactory" AssemblyFile="$(BuildTaskPath)">
     <ParameterGroup>
       <PackageConfigs ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
       <NugetPackages ParameterType="Microsoft.Build.Framework.ITaskItem[]" Required="true" />
