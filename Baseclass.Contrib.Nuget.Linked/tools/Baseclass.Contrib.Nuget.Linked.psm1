@@ -95,14 +95,16 @@ function LinkedAsExisting {
 
 	$msbProject = [Microsoft.Build.Evaluation.ProjectCollection]::GlobalProjectCollection.GetLoadedProjects($project.FullName) | Select-Object -First 1
 	
-	$files = $package.GetFiles()
-
-	$regex = New-Object -TypeName Regex -ArgumentList "^Linked\\"
-
-	foreach($file in $($files | Where-Object { $_.Path.StartsWith("Linked\") }))
-	{
-	    $relativePath = GetRelativePath $projectUri $installPath $file
-		$projectRelativePath = $regex.Replace($file.Path, '')
+	$files = Get-ChildItem $linkedPath –Recurse -File
+	
+	$regex = New-Object -TypeName Regex -ArgumentList $("(?i)" + $linkedPath.Replace("\", "\\"))
+	
+	foreach($file in $files)
+	{		
+	    $relativePath = GetRelativePath $projectUri $file
+		
+		$projectRelativePath = $regex.Replace($file.FullName, "")
+		
 		if($add)
 		{
 			Write-Host "Adding $relativePath as $projectRelativePath"
@@ -112,7 +114,7 @@ function LinkedAsExisting {
 			RemoveLinkedItem $msbProject $relativePath
 		}
 	}
-	
+​
 	$msbProject.Save()
 	$project.Save()
 }
@@ -128,9 +130,9 @@ function RemoveLinkedItem()
 	
 	$item = $msbProject.Items | Where-Object { $_.EvaluatedInclude -eq $relativePath } | Select-Object -First 1
 	
-	if($item -eq $null) #VisualStudio 2013
+	if($item -eq $null) # VisualStudio 2013/2015
 	{
-		Write-Host "Selecting items to remove for VisualStudio 2013"
+		Write-Host "Selecting items to remove for VisualStudio 2013/2015"
 		$item = $msbProject.Items | %{$_.Value} | Where-Object { $_.EvaluatedInclude -eq $relativePath } | Select-Object -First 1
 	}
 	
@@ -170,9 +172,8 @@ function GetRelativePath()
 		[Parameter(Position=0, Mandatory=$true)]
 		$projectUri, 
 		[Parameter(Position=1, Mandatory=$true)]
-		$packagePath,
-		[Parameter(Position=2, Mandatory=$true)]
 		$file)
-	$fileUri = New-Object -TypeName Uri -ArgumentList "file://$(Join-Path $packagePath $file.Path)"
+		
+	$fileUri = New-Object -TypeName Uri -ArgumentList "file://$($file.FullName)"
 	return $projectUri.MakeRelativeUri($fileUri) -replace '/','\'
 }
