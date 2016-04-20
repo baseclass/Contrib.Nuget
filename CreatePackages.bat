@@ -1,4 +1,4 @@
-.nuget\nuget.exe pack Baseclass.Contrib.Nuget.Output\Baseclass.Contrib.Nuget.Output.nuspec -Version 2.1.1
+.nuget\nuget.exe pack Baseclass.Contrib.Nuget.Output\Baseclass.Contrib.Nuget.Output.nuspec -Version 2.2.0-xbuild01
 
 .nuget\nuget.exe pack Baseclass.Contrib.Nuget.Output\Baseclass.Contrib.Nuget.Output.Web.nuspec -Version 2.0.0
 

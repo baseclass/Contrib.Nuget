@@ -15,5 +15,6 @@
     </metadata>
     <files>
         <file src="build\net40\Baseclass.Contrib.Nuget.Output.targets" target="build\net40\Baseclass.Contrib.Nuget.Output.targets" />
+        <file src="build\net40\Baseclass.Contrib.Nuget.Output.Build.dll" target="build\net40\Baseclass.Contrib.Nuget.Output.Build.dll" />
     </files>
 </package>
