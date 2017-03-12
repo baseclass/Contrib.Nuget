@@ -36,7 +36,7 @@ namespace Baseclass.Contrib.Nuget.Output.Build
                 if(!File.Exists(packageConfigPath))
                 {
                     this.LogMessage("Config doesn't exist: {0}", packageConfigPath);
-                    packageConfigPath = Path.Combine(this.ProjectDirectory, "packages.{0}.config");
+                    packageConfigPath = Path.Combine(this.ProjectDirectory, string.Format("packages.{0}.config", this.ProjectName));
                 }
 
                 if (!File.Exists(packageConfigPath))
