@@ -56,19 +56,15 @@
   <!-- Common targets                                               -->
   <!-- ============================================================ -->
   
-  <ItemGroup>
-    <NupkgFiles Include="$(MSBuildThisFileDirectory)\..\..\..\*\*.nupkg"/>
-  </ItemGroup>
-  
   <!--
   Is run once to compute the NugetOutputFiles item from the NuGet dependencies of the project
   -->
   <Target Name="CollectNugetOutputFiles">
     <Message Text="Collecting NuGet output files for $(MSBuildProjectName):" />
     
-    <PackageFilterTask ProjectName="$(MSBuildProjectName)" ProjectDirectory="$(MSBuildProjectDirectory)" NugetPackages="@(NupkgFiles)">
+    <PackageRetrievalTask ProjectName="$(MSBuildProjectName)" ProjectDirectory="$(MSBuildProjectDirectory)" ProjectFullPath="$(MSBuildProjectFullPath)" SolutionPath="$(SolutionDir)">
       <Output ItemName="FilteredNugetPackages" TaskParameter="Result" />
-    </PackageFilterTask>
+    </PackageRetrievalTask>
 
     <Message Text="@(FilteredNugetPackages->'%(RecursiveDir)%(Filename)%(Extension)', '%0D%0A')" />
     <Message Text="Total filtered packages : @(FilteredNugetPackages->Count())" /> 
@@ -84,5 +80,5 @@
   <!--
   Filter the NugetPackages list to only include nuget packages referenced in the PackageConfigs list which depend on Baseclass.Contrib.Nuget.Output
   -->
-  <UsingTask TaskName="PackageFilterTask" AssemblyFile="$(MSBuildThisFileDirectory)\Baseclass.Contrib.Nuget.Output.Build.dll" />
+  <UsingTask TaskName="PackageRetrievalTask" AssemblyFile="$(MSBuildThisFileDirectory)\Baseclass.Contrib.Nuget.Output.Build.dll" />
 </Project>
