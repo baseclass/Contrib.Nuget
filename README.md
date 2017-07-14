@@ -5,7 +5,7 @@ Project extending nuget with additional features:
 
 ## Baseclass.Contrib.Nuget.Output
 
-Treats the "output" folder as an additional special folder and copies it's content to the build folder
+Treats the "output" folder as an additional special folder and copies its content to the build folder
 
 http://www.nuget.org/packages/Baseclass.Contrib.Nuget.Output/
 
@@ -31,7 +31,7 @@ Step by step example: http://www.baseclass.ch/blog/Lists/Beitraege/Post.aspx?ID=
 
 ## Baseclass.Contrib.Nuget.Linked
 
-Treats the "Linked" folder as an additional special folder and links it's content as existing to the current project.
+Treats the "Linked" folder as an additional special folder and links its content as existing to the current project.
 
 http://www.nuget.org/packages/Baseclass.Contrib.Nuget.Linked/
 
