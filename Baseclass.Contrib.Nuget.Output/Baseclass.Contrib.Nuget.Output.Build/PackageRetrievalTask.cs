@@ -130,7 +130,7 @@ namespace Baseclass.Contrib.Nuget.Output.Build
             switch (currentNugetPackageSource)
             {
                 case NugetPackageSource.PackagesConfig:
-                    packagesPath = Path.Combine(SolutionPath, "packages");
+                    packagesPath = GetSolutionPackagePath();
                     break;
                 case NugetPackageSource.ProjectFile:
                     packagesPath = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ??
@@ -146,6 +146,24 @@ namespace Baseclass.Contrib.Nuget.Output.Build
             return Directory.EnumerateFiles(packagesPath, "*.nupkg", SearchOption.AllDirectories)
                 .Where(p => usedNugetPackages.Contains(Path.GetFileNameWithoutExtension(p).ToLowerInvariant()))
                 .ToArray();
+        }
+
+        private string GetSolutionPackagePath()
+        {
+            var solutionNugetConfig = Path.Combine(SolutionPath, "nuget.config");
+            if (File.Exists(solutionNugetConfig))
+            {
+                var config = new XmlDocument();
+                config.Load(solutionNugetConfig);
+
+                var repoPath = config.SelectSingleNode("/configuration/settings/repositoryPath");
+                if (repoPath != null)
+                {
+                    return Path.GetFullPath(Path.Combine(SolutionPath, repoPath.InnerText));
+                }
+            }
+
+            return Path.Combine(SolutionPath, "packages");
         }
 
         private NugetPackageSource GetNugetPackageSource()
