@@ -156,10 +156,27 @@ namespace Baseclass.Contrib.Nuget.Output.Build
                 var config = new XmlDocument();
                 config.Load(solutionNugetConfig);
 
-                var repoPath = config.SelectSingleNode("/configuration/settings/repositoryPath");
-                if (repoPath != null)
+                string repoPath = null;
+                var repoPathSetting = config.SelectSingleNode("/configuration/config/add[@key='repositoryPath']");
+                if (repoPathSetting != null && repoPathSetting.Attributes != null)
                 {
-                    return Path.GetFullPath(Path.Combine(SolutionPath, repoPath.InnerText));
+                    repoPath = repoPathSetting.Attributes["value"].Value;
+                }
+                
+                repoPathSetting = config.SelectSingleNode("/configuration/settings/repositoryPath");
+                if (repoPathSetting != null)
+                {
+                    repoPath = repoPathSetting.InnerText;
+                }
+
+                if (!string.IsNullOrEmpty(repoPath))
+                {
+                    if (Path.IsPathRooted(repoPath))
+                    {
+                        return repoPath;
+                    }
+
+                    return Path.GetFullPath(Path.Combine(SolutionPath, repoPath));
                 }
             }
 
