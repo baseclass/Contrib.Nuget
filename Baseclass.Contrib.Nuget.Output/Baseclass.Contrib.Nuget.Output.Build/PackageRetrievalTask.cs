@@ -130,7 +130,7 @@ namespace Baseclass.Contrib.Nuget.Output.Build
             switch (currentNugetPackageSource)
             {
                 case NugetPackageSource.PackagesConfig:
-                    packagesPath = Path.Combine(SolutionPath, "packages");
+                    packagesPath = GetSolutionPackagePath();
                     break;
                 case NugetPackageSource.ProjectFile:
                     packagesPath = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ??
@@ -146,6 +146,41 @@ namespace Baseclass.Contrib.Nuget.Output.Build
             return Directory.EnumerateFiles(packagesPath, "*.nupkg", SearchOption.AllDirectories)
                 .Where(p => usedNugetPackages.Contains(Path.GetFileNameWithoutExtension(p).ToLowerInvariant()))
                 .ToArray();
+        }
+
+        private string GetSolutionPackagePath()
+        {
+            var solutionNugetConfig = Path.Combine(SolutionPath, "nuget.config");
+            if (File.Exists(solutionNugetConfig))
+            {
+                var config = new XmlDocument();
+                config.Load(solutionNugetConfig);
+
+                string repoPath = null;
+                var repoPathSetting = config.SelectSingleNode("/configuration/config/add[@key='repositoryPath']");
+                if (repoPathSetting != null && repoPathSetting.Attributes != null)
+                {
+                    repoPath = repoPathSetting.Attributes["value"].Value;
+                }
+                
+                repoPathSetting = config.SelectSingleNode("/configuration/settings/repositoryPath");
+                if (repoPathSetting != null)
+                {
+                    repoPath = repoPathSetting.InnerText;
+                }
+
+                if (!string.IsNullOrEmpty(repoPath))
+                {
+                    if (Path.IsPathRooted(repoPath))
+                    {
+                        return repoPath;
+                    }
+
+                    return Path.GetFullPath(Path.Combine(SolutionPath, repoPath));
+                }
+            }
+
+            return Path.Combine(SolutionPath, "packages");
         }
 
         private NugetPackageSource GetNugetPackageSource()
