@@ -41,7 +41,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IPackageManager.cs" />
     <Compile Include="ITaskExtensions.cs" />
+    <Compile Include="NugetPackageManager.cs" />
     <Compile Include="PackageRetrievalTask.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
