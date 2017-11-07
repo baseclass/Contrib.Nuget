@@ -162,11 +162,14 @@ namespace Baseclass.Contrib.Nuget.Output.Build
                 {
                     repoPath = repoPathSetting.Attributes["value"].Value;
                 }
-                
-                repoPathSetting = config.SelectSingleNode("/configuration/settings/repositoryPath");
-                if (repoPathSetting != null)
+
+                if (string.IsNullOrEmpty(repoPath))
                 {
-                    repoPath = repoPathSetting.InnerText;
+                    repoPathSetting = config.SelectSingleNode("/configuration/settings/repositoryPath");
+                    if (repoPathSetting != null)
+                    {
+                        repoPath = repoPathSetting.InnerText;
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(repoPath))
