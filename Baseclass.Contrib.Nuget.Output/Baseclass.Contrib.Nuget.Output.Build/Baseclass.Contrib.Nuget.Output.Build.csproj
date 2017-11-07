@@ -45,6 +45,7 @@
     <Compile Include="ITaskExtensions.cs" />
     <Compile Include="NugetPackageManager.cs" />
     <Compile Include="PackageRetrievalTask.cs" />
+    <Compile Include="PaketPackageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -10,9 +10,8 @@
         <projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Treats the "output" folder in an dependend nuget package as an additional special folder and copies it's content to the build folder</description>
-		<releaseNotes xml:space="preserve">- Added support for VS2017
-- PackageReference in *proj files
-- XBuild support</releaseNotes>
+		<releaseNotes xml:space="preserve">- Added support for paket
+- Added support for repository path configuration</releaseNotes>
         <tags>Nuget Targets Copy Output build package convention</tags>
     </metadata>
     <files>

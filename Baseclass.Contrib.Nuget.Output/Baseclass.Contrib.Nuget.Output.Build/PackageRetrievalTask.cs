@@ -1,4 +1,6 @@
-﻿using Microsoft.Build.Framework;
+﻿using System.Diagnostics;
+using System.IO;
+using Microsoft.Build.Framework;
 
 namespace Baseclass.Contrib.Nuget.Output.Build
 {
@@ -39,13 +41,13 @@ namespace Baseclass.Contrib.Nuget.Output.Build
 
         private IPackageManager GetPackageManager()
         {
-            var packageManager = new NugetPackageManager(SolutionPath,
-                ProjectDirectory,
-                ProjectName,
-                ProjectFullPath,
-                this);
-
-            return packageManager;
+            return File.Exists(Path.Combine(SolutionPath, "paket.dependencies"))
+                ? (IPackageManager) new PaketPackageManager(SolutionPath, ProjectDirectory)
+                : new NugetPackageManager(SolutionPath,
+                    ProjectDirectory,
+                    ProjectName,
+                    ProjectFullPath,
+                    this);
         }
     }
 }
