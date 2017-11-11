@@ -41,8 +41,8 @@ namespace Baseclass.Contrib.Nuget.Output.Build
 
         private IPackageManager GetPackageManager()
         {
-            return File.Exists(Path.Combine(SolutionPath, "paket.dependencies"))
-                ? (IPackageManager) new PaketPackageManager(SolutionPath, ProjectDirectory)
+            return File.Exists(Path.Combine(ProjectDirectory, "paket.references"))
+                ? (IPackageManager) new PaketPackageManager(ProjectDirectory)
                 : new NugetPackageManager(SolutionPath,
                     ProjectDirectory,
                     ProjectName,

@@ -7,15 +7,19 @@ using Microsoft.Build.Utilities;
 namespace Baseclass.Contrib.Nuget.Output.Build
 {
     public class PaketPackageManager : IPackageManager
-
     {
         private readonly string projectDirectory;
-        private readonly string solutionPath;
-
-        public PaketPackageManager(string solutionPath, string projectDirectory)
+        private readonly string paketPath;
+        
+        public PaketPackageManager(string projectDirectory)
         {
-            this.solutionPath = solutionPath;
+            var paketPath = projectDirectory;
+
+            while (!File.Exists(Path.Combine(paketPath, "paket.dependencies")))
+                paketPath = Path.Combine(paketPath, "../");
+                        
             this.projectDirectory = projectDirectory;
+            this.paketPath = paketPath;
         }
 
         public bool TryGetUsedPackagesDependendingOnNugetOutput(out ITaskItem[] packages)
@@ -24,7 +28,7 @@ namespace Baseclass.Contrib.Nuget.Output.Build
             var packagesUsedByProject = GetPackagesUsedByProject().ToArray();
 
             packages = packagesDependendingOnNugetOutput.Where(package => packagesUsedByProject.Contains(package))
-                .Select(id => Path.Combine(solutionPath, "packages", id, id)) // CollectNugetOutputFiles target expects directory with file name
+                .Select(id => Path.Combine(paketPath, "packages", id, id)) // CollectNugetOutputFiles target expects directory with file name
                 .Select(p => (ITaskItem) new TaskItem(p))
                 .ToArray();
             return true;
@@ -37,7 +41,7 @@ namespace Baseclass.Contrib.Nuget.Output.Build
 
         private IEnumerable<string> GetPackagesDependendingOnNugetOutput()
         {
-            var dependencies = File.ReadAllLines(Path.Combine(solutionPath, "paket.lock"))
+            var dependencies = File.ReadAllLines(Path.Combine(paketPath, "paket.lock"))
                 .Where(line => line.StartsWith("    "));
 
             string currentDirectDependency = null;
