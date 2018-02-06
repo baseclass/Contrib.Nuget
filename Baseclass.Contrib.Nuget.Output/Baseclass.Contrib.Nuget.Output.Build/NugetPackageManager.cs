@@ -68,11 +68,12 @@ namespace Baseclass.Contrib.Nuget.Output.Build
                 using (var archive = Package.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     var nuspec = archive.GetParts().Single(part => part.Uri.ToString().EndsWith(".nuspec"));
-                    var nugetSpec = Path.Combine(nupkgpath, Path.GetFileName(nuspec.Uri.ToString()));
+                    var nuspecFilename = Path.GetFileName(nuspec.Uri.ToString());
+                    var nugetSpec = Path.Combine(nupkgpath, nuspecFilename);
 
                     // use a mutex to ensure that only one process unzip the nuspec
                     // and that one process do not start reading it due to its existence while another one is still writing it.
-                    var mut = new Mutex(false, nugetSpec);
+                    var mut = new Mutex(false, nuspecFilename);
                     var xml = new XmlDocument();
                     try
                     {
