@@ -68,44 +68,45 @@ namespace Baseclass.Contrib.Nuget.Output.Build
                 using (var archive = Package.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     var nuspec = archive.GetParts().Single(part => part.Uri.ToString().EndsWith(".nuspec"));
-                    var nugetSpec = Path.Combine(nupkgpath, Path.GetFileName(nuspec.Uri.ToString()));
+                    var nuspecFilename = Path.GetFileName(nuspec.Uri.ToString());
+                    var nugetSpec = Path.Combine(nupkgpath, nuspecFilename);
 
                     // use a mutex to ensure that only one process unzip the nuspec
                     // and that one process do not start reading it due to its existence while another one is still writing it.
-                    if (!File.Exists(nugetSpec))
+                    var mut = new Mutex(false, nuspecFilename);
+                    var xml = new XmlDocument();
+                    try
                     {
-                        var mut = new Mutex(false, "UnzipNuSpec");
-                        try
-                        {
-                            mut.WaitOne();
+                        mut.WaitOne();
 
-                            if (!File.Exists(nugetSpec))
-                                try
+                        if (!File.Exists(nugetSpec))
+                        {
+                            try
+                            {
+                                using (
+                                    var outputstream = new FileStream(nugetSpec, FileMode.Create,
+                                        FileAccess.ReadWrite, FileShare.None))
                                 {
-                                    using (
-                                        var outputstream = new FileStream(nugetSpec, FileMode.Create,
-                                            FileAccess.ReadWrite, FileShare.None))
+                                    using (var nspecstream = nuspec.GetStream())
                                     {
-                                        using (var nspecstream = nuspec.GetStream())
-                                        {
-                                            nspecstream.CopyTo(outputstream);
-                                        }
+                                        nspecstream.CopyTo(outputstream);
                                     }
                                 }
-                                catch (IOException)
-                                {
-                                    if (!File.Exists(nugetSpec))
-                                        throw;
-                                }
+                            }
+                            catch (IOException)
+                            {
+                                if (!File.Exists(nugetSpec))
+                                    throw;
+                            }
                         }
-                        finally
-                        {
-                            mut.ReleaseMutex();
-                        }
-                    }
 
-                    var xml = new XmlDocument();
-                    xml.LoadXml(File.ReadAllText(nugetSpec));
+                        xml.Load(nugetSpec);
+                    }
+                    finally
+                    {
+                        mut.ReleaseMutex();
+                    }
+                    
                     var deps = xml.GetElementsByTagName("dependency");
                     foreach (XmlNode dep in deps)
                     {
