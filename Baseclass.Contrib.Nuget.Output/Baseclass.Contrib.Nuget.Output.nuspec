@@ -15,7 +15,7 @@
         <tags>Nuget Targets Copy Output build package convention</tags>
     </metadata>
     <files>
-        <file src="build\net40\Baseclass.Contrib.Nuget.Output.targets" target="build\net40\Baseclass.Contrib.Nuget.Output.targets" />
-        <file src="build\net40\Baseclass.Contrib.Nuget.Output.Build.dll" target="build\net40\Baseclass.Contrib.Nuget.Output.Build.dll" />
+        <file src="build\net40\Baseclass.Contrib.Nuget.Output.targets" target="build\Baseclass.Contrib.Nuget.Output.targets" />
+        <file src="build\net40\Baseclass.Contrib.Nuget.Output.Build.dll" target="build\Baseclass.Contrib.Nuget.Output.Build.dll" />
     </files>
 </package>
