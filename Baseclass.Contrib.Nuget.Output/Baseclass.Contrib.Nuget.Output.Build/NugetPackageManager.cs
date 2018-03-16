@@ -153,30 +153,34 @@ namespace Baseclass.Contrib.Nuget.Output.Build
 
         private string GetSolutionPackagePath()
         {
-            var solutionNugetConfig = Path.Combine(solutionPath, "nuget.config");
-            if (File.Exists(solutionNugetConfig))
+            for (var path = solutionPath; !string.IsNullOrEmpty(path); path = Path.GetDirectoryName(path))
             {
-                var config = new XmlDocument();
-                config.Load(solutionNugetConfig);
+                var nugetConfig = Path.Combine(path, "nuget.config");
 
-                string repoPath = null;
-                var repoPathSetting = config.SelectSingleNode("/configuration/config/add[@key='repositoryPath']");
-                if (repoPathSetting != null && repoPathSetting.Attributes != null)
-                    repoPath = repoPathSetting.Attributes["value"].Value;
-
-                if (string.IsNullOrEmpty(repoPath))
+                if (File.Exists(nugetConfig))
                 {
-                    repoPathSetting = config.SelectSingleNode("/configuration/settings/repositoryPath");
-                    if (repoPathSetting != null)
-                        repoPath = repoPathSetting.InnerText;
-                }
+                    var config = new XmlDocument();
+                    config.Load(nugetConfig);
 
-                if (!string.IsNullOrEmpty(repoPath))
-                {
-                    if (Path.IsPathRooted(repoPath))
-                        return repoPath;
+                    string repoPath = null;
+                    var repoPathSetting = config.SelectSingleNode("/configuration/config/add[@key='repositoryPath']");
+                    if (repoPathSetting != null && repoPathSetting.Attributes != null)
+                        repoPath = repoPathSetting.Attributes["value"].Value;
 
-                    return Path.GetFullPath(Path.Combine(solutionPath, repoPath));
+                    if (string.IsNullOrEmpty(repoPath))
+                    {
+                        repoPathSetting = config.SelectSingleNode("/configuration/settings/repositoryPath");
+                        if (repoPathSetting != null)
+                            repoPath = repoPathSetting.InnerText;
+                    }
+
+                    if (!string.IsNullOrEmpty(repoPath))
+                    {
+                        if (Path.IsPathRooted(repoPath))
+                            return repoPath;
+
+                        return Path.GetFullPath(Path.Combine(path, repoPath));
+                    }
                 }
             }
 
