@@ -139,7 +139,7 @@ namespace Baseclass.Contrib.Nuget.Output.Build
                     packagesPath = Environment.GetEnvironmentVariable("NUGET_PACKAGES") ??
                                    Path.Combine(
                                        Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
-                                       @".nuget\packages");
+                                       ".nuget" + Path.DirectorySeparatorChar + "packages");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(currentNugetPackageSource), currentNugetPackageSource,
