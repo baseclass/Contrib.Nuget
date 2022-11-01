@@ -80,5 +80,5 @@
   <!--
   Filter the NugetPackages list to only include nuget packages referenced in the PackageConfigs list which depend on Baseclass.Contrib.Nuget.Output
   -->
-  <UsingTask TaskName="PackageRetrievalTask" AssemblyFile="$(MSBuildThisFileDirectory)\Baseclass.Contrib.Nuget.Output.Build.dll" />
+  <UsingTask TaskName="PackageRetrievalTask" AssemblyFile="$(MSBuildThisFileDirectory)\Baseclass.Contrib.Nuget.Output.Build.dll" TaskFactory="TaskHostFactory" />
 </Project>
