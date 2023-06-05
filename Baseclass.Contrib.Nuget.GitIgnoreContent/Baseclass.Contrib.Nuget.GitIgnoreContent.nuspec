@@ -6,20 +6,20 @@
         <title>Baseclass.Contrib.Nuget.GitIgnoreContent</title>
         <authors>Daniel Romero</authors>
         <owners>baseclass</owners>
-		<licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
-		<projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
+        <license type="expression">MIT</license>
+        <projectUrl>https://github.com/baseclass/Contrib.Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<summary>Ignore nuget content files in git</summary>
+        <summary>Ignore nuget content files in git</summary>
         <description>Ignore nuget content files in git:
 			- Generate entries in the .gitignore file to exclude nuget content files from the source repository
 			- Restore nuget content files before building (Automatically in VS and manually with a powershell script
 			- Use Initialize-GitIgnore to add it to an existing solution</description>
-		<tags>Nuget Content Files Git Ignore GitIgnore</tags>
+        <tags>Nuget Content Files Git Ignore GitIgnore</tags>
     </metadata>
     <files>
-		<file src="tools\init.ps1" target="tools\init.ps1" />
-		<file src="tools\Baseclass.Contrib.Nuget.GitIgnoreContent.psm1" target="tools\Baseclass.Contrib.Nuget.GitIgnoreContent.psm1" />
-		<file src="tools\GitIgnoreNugetContentRegisterEvents.ps1" target="tools\GitIgnoreNugetContentRegisterEvents.ps1" />
-		<file src="tools\RestoreNugetContent.ps1" target="tools\RestoreNugetContent.ps1" />
+        <file src="tools\init.ps1" target="tools\init.ps1" />
+        <file src="tools\Baseclass.Contrib.Nuget.GitIgnoreContent.psm1" target="tools\Baseclass.Contrib.Nuget.GitIgnoreContent.psm1" />
+        <file src="tools\GitIgnoreNugetContentRegisterEvents.ps1" target="tools\GitIgnoreNugetContentRegisterEvents.ps1" />
+        <file src="tools\RestoreNugetContent.ps1" target="tools\RestoreNugetContent.ps1" />
     </files>
 </package>

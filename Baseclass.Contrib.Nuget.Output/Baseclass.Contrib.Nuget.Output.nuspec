@@ -6,11 +6,11 @@
         <title>Baseclass.Contrib.Nuget.Output</title>
         <authors>Daniel Romero</authors>
         <owners>baseclass</owners>
-        <licenseUrl>http://www.baseclass.ch/documents/MITLicense.txt</licenseUrl>
-        <projectUrl>http://www.baseclass.ch/Contrib/Nuget</projectUrl>
+        <license type="expression">MIT</license>
+        <projectUrl>https://github.com/baseclass/Contrib.Nuget</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Treats the "output" folder in an dependend nuget package as an additional special folder and copies it's content to the build folder</description>
-		<releaseNotes xml:space="preserve">- Use TaskHostFactory to fix locking of package folder</releaseNotes>
+        <releaseNotes xml:space="preserve">- Use TaskHostFactory to fix locking of package folder</releaseNotes>
         <tags>Nuget Targets Copy Output build package convention</tags>
     </metadata>
     <files>
